@@ -217,6 +217,17 @@
 
                         <div class="flex items-center justify-between">
                             <div>
+                                <div class="font-bold text-white text-sm">Defiled (White Death)</div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-zinc-900 rounded-lg p-1 border border-zinc-700">
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="defiled" data-action="minus">-</button>
+                                <span class="w-4 text-center font-bold text-white text-sm cabal-val" id="val-defiled">0</span>
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="defiled" data-action="plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
                                 <div class="font-bold text-white text-sm">Innsmouth</div>
                             </div>
                             <div class="flex items-center gap-2 bg-zinc-900 rounded-lg p-1 border border-zinc-700">
@@ -321,86 +332,113 @@
             const levels = ['blue', 'yellow', 'orange', 'red'];
             const minIdx = levels.indexOf(minLevel);
             const card = { type: 'special', target: target };
-            levels.forEach((l, i) => {
-                card[l] = i >= minIdx ? name : "Nothing";
-            });
+            levels.forEach((l, i) => card[l] = i >= minIdx ? name : "Nothing");
             return card;
         }
 
-        function makeHordeCard(target, b, y, o, r) {
-            return {
-                type: 'spawn',
-                target: target,
-                blue: b === 0 ? "Nothing" : `${formatSpawn(b, target)} (+1 Horde)`,
-                yellow: y === 0 ? "Nothing" : `${formatSpawn(y, target)} (+1 Horde)`,
-                orange: o === 0 ? "Nothing" : `${formatSpawn(o, target)} (+1 Horde)`,
-                red: r === 0 ? "Nothing" : `${formatSpawn(r, target)} (+1 Horde)`
-            };
-        }
-
-        const DeckBuilder = {
-            base: () => [
-                ...Array(6).fill(null).map(() => makeSpawnCard('Walker', 1, 2, 3, 5)),
-                ...Array(5).fill(null).map(() => makeSpawnCard('Walker', 2, 3, 4, 6)),
-                ...Array(6).fill(null).map(() => makeSpawnCard('Walker', 0, 1, 2, 4)),
-                ...Array(5).fill(null).map(() => makeSpawnCard('Runner', 0, 1, 2, 3)),
-                ...Array(4).fill(null).map(() => makeSpawnCard('Runner', 1, 2, 3, 4)),
-                ...Array(3).fill(null).map(() => makeSpawnCard('Runner', 0, 0, 1, 2)),
-                ...Array(4).fill(null).map(() => makeSpawnCard('Fatty', 0, 1, 1, 2)),
-                ...Array(4).fill(null).map(() => makeSpawnCard('Fatty', 0, 0, 2, 3)),
-                ...Array(3).fill(null).map(() => makeSpawnCard('Abomination', 0, 0, 1, 1)),
-                ...Array(4).fill(null).map(() => makeSpecialCard('Double Spawn', 'DOUBLE SPAWN')),
-                ...Array(2).fill(null).map(() => makeSpecialCard('Walker', 'Extra Activation: Walkers', 'yellow')),
-                ...Array(1).fill(null).map(() => makeSpecialCard('Runner', 'Extra Activation: Runners', 'yellow')),
-                ...Array(1).fill(null).map(() => makeSpecialCard('Fatty', 'Extra Activation: Fatties', 'orange'))
-            ],
-            berserker: () => [
-                ...Array(4).fill(null).map(() => makeSpawnCard('Berserker Walker', 1, 2, 3, 4)),
-                ...Array(4).fill(null).map(() => makeSpawnCard('Berserker Walker', 0, 2, 4, 5)),
-                ...Array(2).fill(null).map(() => makeSpecialCard('Berserker Walker', 'Extra Activation: Berserker Walkers', 'yellow'))
-            ],
-            whiteDeath: () => [
-                ...Array(4).fill(null).map(() => makeSpawnCard('Terrorcotta Walker', 1, 2, 3, 4)),
-                ...Array(4).fill(null).map(() => makeSpawnCard('Terrorcotta Walker', 2, 3, 4, 5)),
-                ...Array(3).fill(null).map(() => makeSpawnCard('Climber', 0, 1, 2, 3)),
-                ...Array(2).fill(null).map(() => makeSpawnCard('Climber', 1, 2, 3, 4)),
-                ...Array(3).fill(null).map(() => makeSpawnCard('Brute', 0, 1, 2, 3)),
-                ...Array(2).fill(null).map(() => makeSpecialCard('Terrorcotta Walker', 'Extra Activation: Terrorcotta Walkers', 'yellow')),
-                ...Array(1).fill(null).map(() => makeSpecialCard('Climber', 'Extra Activation: Climbers', 'orange'))
-            ],
-            wulfsberg: () => [
-                ...Array(4).fill(null).map(() => makeSpawnCard('Zombie Wolfz', 1, 2, 3, 4)),
-                ...Array(4).fill(null).map(() => makeSpawnCard('Zombie Wolfz', 0, 2, 3, 4)),
-                ...Array(2).fill(null).map(() => makeSpawnCard('Wolfbomination', 0, 0, 1, 1)),
-                ...Array(2).fill(null).map(() => makeSpecialCard('Zombie Wolfz', 'Extra Activation: Zombie Wolfz', 'yellow'))
-            ],
-            greenHorde: () => [
-                ...Array(6).fill(null).map(() => makeHordeCard('Orc Walker', 1, 2, 3, 5)),
-                ...Array(5).fill(null).map(() => makeHordeCard('Orc Walker', 2, 3, 4, 6)),
-                ...Array(5).fill(null).map(() => makeHordeCard('Orc Walker', 0, 1, 2, 4)),
-                ...Array(5).fill(null).map(() => makeHordeCard('Orc Runner', 0, 1, 2, 3)),
-                ...Array(4).fill(null).map(() => makeHordeCard('Orc Runner', 1, 2, 3, 4)),
-                ...Array(2).fill(null).map(() => makeHordeCard('Orc Runner', 0, 0, 1, 2)),
-                ...Array(4).fill(null).map(() => makeHordeCard('Orc Fatty', 0, 1, 1, 2)),
-                ...Array(4).fill(null).map(() => makeHordeCard('Orc Fatty', 0, 0, 2, 3)),
-                ...Array(3).fill(null).map(() => makeSpawnCard('Orc Abomination', 0, 0, 1, 1)),
-                ...Array(4).fill(null).map(() => makeSpecialCard('Enter the Horde!', 'ENTER THE HORDE!')),
-                ...Array(4).fill(null).map(() => makeSpecialCard('Double Spawn', 'DOUBLE SPAWN')),
-                ...Array(2).fill(null).map(() => makeSpecialCard('Orc Walker', 'Extra Activation: Orc Walkers', 'yellow')),
-                ...Array(1).fill(null).map(() => makeSpecialCard('Orc Runner', 'Extra Activation: Orc Runners', 'yellow')),
-                ...Array(1).fill(null).map(() => makeSpecialCard('Orc Fatty', 'Extra Activation: Orc Fatties', 'orange'))
-            ],
-            friendsAndFoes: () => [
-                ...Array(4).fill(null).map(() => makeHordeCard('Tainted Orc Walker', 1, 2, 3, 4)),
-                ...Array(4).fill(null).map(() => makeHordeCard('Tainted Orc Walker', 0, 2, 4, 5)),
-                ...Array(2).fill(null).map(() => makeSpawnCard('Tainted Abomination', 0, 0, 1, 1)),
-                ...Array(2).fill(null).map(() => makeSpecialCard('Tainted Orc Walker', 'Extra Activation: Tainted Orcs', 'yellow'))
-            ],
-            necromancers: {
-                std: () => makeSpecialCard('Standard Necromancer', '1x Necromancer + Zone'),
-                orc: () => makeSpecialCard('Orc Necromancer', '1x Orc Necromancer + Zone (+1 Walker, +1 Runner, +1 Fatty to Horde)'),
-                innsmouth: () => makeSpecialCard('Innsmouth Necromancer', '1x Innsmouth Necromancer + Zone')
+        // EXACT MATCH DATABASE ARCHITECTURE
+        // This array maps 1:1 with the physical printed cards in the box.
+        // Format: [CardNumber, Target, BlueCount, YellowCount, OrangeCount, RedCount]
+        const CardDatabase = {
+            base: () => {
+                const exactBaseCards = [
+                    [1, 'Walker', 1, 2, 3, 5], [2, 'Walker', 1, 2, 3, 5], [3, 'Walker', 1, 2, 3, 5], [4, 'Walker', 1, 2, 3, 5],
+                    [5, 'Walker', 1, 2, 3, 5], [6, 'Walker', 1, 2, 3, 5], [7, 'Walker', 0, 1, 2, 4], [8, 'Walker', 0, 1, 2, 4],
+                    [9, 'Walker', 0, 1, 2, 4], [10, 'Walker', 0, 1, 2, 4], [11, 'Walker', 0, 1, 2, 4], [12, 'Walker', 2, 3, 4, 6],
+                    [13, 'Walker', 2, 3, 4, 6], [14, 'Walker', 2, 3, 4, 6], [15, 'Walker', 2, 3, 4, 6],
+                    [16, 'Runner', 0, 1, 2, 3], [17, 'Runner', 0, 1, 2, 3], [18, 'Runner', 0, 1, 2, 3], [19, 'Runner', 0, 1, 2, 3],
+                    [20, 'Runner', 0, 1, 2, 3], [21, 'Runner', 1, 2, 3, 4], [22, 'Runner', 1, 2, 3, 4], [23, 'Runner', 1, 2, 3, 4],
+                    [24, 'Runner', 0, 0, 1, 2], [25, 'Runner', 0, 0, 1, 2],
+                    [26, 'Fatty', 0, 1, 1, 2], [27, 'Fatty', 0, 1, 1, 2], [28, 'Fatty', 0, 1, 1, 2], [29, 'Fatty', 0, 1, 1, 2],
+                    [30, 'Fatty', 0, 0, 2, 3], [31, 'Fatty', 0, 0, 2, 3], [32, 'Fatty', 0, 0, 2, 3], [33, 'Fatty', 0, 0, 2, 3],
+                    [34, 'Abomination', 0, 0, 1, 1], [35, 'Abomination', 0, 0, 1, 1], [36, 'Abomination', 0, 0, 1, 1],
+                    [37, 'Walker', 1, 2, 3, 5], [38, 'Walker', 1, 2, 3, 5], [39, 'Walker', 0, 1, 2, 4], [40, 'Runner', 0, 1, 2, 3]
+                ];
+                let deck = exactBaseCards.map(c => makeSpawnCard(c[1], c[2], c[3], c[4], c[5]));
+                [41,42,43,44].forEach(n => deck.push(makeSpecialCard('Double Spawn', 'DOUBLE SPAWN')));
+                [45,46].forEach(n => deck.push(makeSpecialCard('Walker', 'Extra Activation: Walkers', 'yellow')));
+                deck.push(makeSpecialCard('Runner', 'Extra Activation: Runners', 'yellow'));
+                deck.push(makeSpecialCard('Fatty', 'Extra Activation: Fatties', 'orange'));
+                return deck;
+            },
+            berserker: () => {
+                const exactBerserkers = [
+                    [55, 'Berserker Walker', 1, 2, 3, 4], [56, 'Berserker Walker', 1, 2, 3, 4],
+                    [57, 'Berserker Walker', 1, 2, 3, 4], [58, 'Berserker Walker', 1, 2, 3, 4],
+                    [59, 'Berserker Walker', 0, 2, 4, 5], [60, 'Berserker Walker', 0, 2, 4, 5],
+                    [61, 'Berserker Walker', 0, 2, 4, 5], [62, 'Berserker Walker', 0, 2, 4, 5]
+                ];
+                let deck = exactBerserkers.map(c => makeSpawnCard(c[1], c[2], c[3], c[4], c[5]));
+                deck.push(makeSpecialCard('Berserker Walker', 'Extra Activation: Berserkers', 'yellow'));
+                deck.push(makeSpecialCard('Berserker Walker', 'Extra Activation: Berserkers', 'yellow'));
+                return deck;
+            },
+            whiteDeath: () => {
+                const exactWD = [
+                    [1, 'Terrorcotta Walker', 1, 2, 3, 4], [2, 'Terrorcotta Walker', 1, 2, 3, 4], [3, 'Terrorcotta Walker', 1, 2, 3, 4],
+                    [4, 'Terrorcotta Walker', 2, 3, 4, 5], [5, 'Terrorcotta Walker', 2, 3, 4, 5], [6, 'Terrorcotta Walker', 2, 3, 4, 5],
+                    [7, 'Climber', 0, 1, 2, 3], [8, 'Climber', 0, 1, 2, 3], [9, 'Climber', 0, 1, 2, 3],
+                    [10, 'Climber', 1, 2, 3, 4], [11, 'Climber', 1, 2, 3, 4],
+                    [12, 'Brute', 0, 1, 2, 3], [13, 'Brute', 0, 1, 2, 3], [14, 'Brute', 0, 1, 2, 3]
+                ];
+                let deck = exactWD.map(c => makeSpawnCard(c[1], c[2], c[3], c[4], c[5]));
+                deck.push(makeSpecialCard('Terrorcotta Walker', 'Extra Activation: Terrorcottas', 'yellow'));
+                deck.push(makeSpecialCard('Climber', 'Extra Activation: Climbers', 'orange'));
+                return deck;
+            },
+            wulfsberg: () => {
+                const exactWulf = [
+                    [1, 'Zombie Wolfz', 1, 2, 3, 4], [2, 'Zombie Wolfz', 1, 2, 3, 4], [3, 'Zombie Wolfz', 1, 2, 3, 4],
+                    [4, 'Zombie Wolfz', 1, 2, 3, 4], [5, 'Zombie Wolfz', 1, 2, 3, 4], [6, 'Zombie Wolfz', 1, 2, 3, 4],
+                    [7, 'Zombie Wolfz', 0, 1, 2, 3], [8, 'Zombie Wolfz', 0, 1, 2, 3],
+                    [9, 'Zombie Wolfz', 0, 1, 2, 3], [10, 'Zombie Wolfz', 0, 1, 2, 3],
+                    [11, 'Wolfabomination', 0, 0, 1, 1], [12, 'Wolfabomination', 0, 0, 1, 1]
+                ];
+                let deck = exactWulf.map(c => makeSpawnCard(c[1], c[2], c[3], c[4], c[5]));
+                deck.push(makeSpecialCard('Zombie Wolfz', 'Extra Activation: Wolfz', 'yellow'));
+                deck.push(makeSpecialCard('Zombie Wolfz', 'Extra Activation: Wolfz', 'yellow'));
+                return deck;
+            },
+            greenHorde: () => {
+                const exactGH = [
+                    [1, 'Orc Walker', 1, 2, 3, 4], [2, 'Orc Walker', 1, 2, 3, 4], [3, 'Orc Walker', 1, 2, 3, 4], [4, 'Orc Walker', 1, 2, 3, 4], [5, 'Orc Walker', 1, 2, 3, 4],
+                    [6, 'Orc Walker', 1, 2, 3, 4], [7, 'Orc Walker', 1, 2, 3, 4], [8, 'Orc Walker', 1, 2, 3, 4], [9, 'Orc Walker', 1, 2, 3, 4], [10, 'Orc Walker', 1, 2, 3, 4],
+                    [11, 'Orc Walker', 2, 3, 4, 5], [12, 'Orc Walker', 2, 3, 4, 5], [13, 'Orc Walker', 2, 3, 4, 5], [14, 'Orc Walker', 2, 3, 4, 5], [15, 'Orc Walker', 2, 3, 4, 5],
+                    [16, 'Orc Runner', 0, 1, 2, 3], [17, 'Orc Runner', 0, 1, 2, 3], [18, 'Orc Runner', 0, 1, 2, 3], [19, 'Orc Runner', 0, 1, 2, 3], [20, 'Orc Runner', 0, 1, 2, 3], [21, 'Orc Runner', 0, 1, 2, 3],
+                    [22, 'Orc Runner', 1, 2, 3, 4], [23, 'Orc Runner', 1, 2, 3, 4], [24, 'Orc Runner', 1, 2, 3, 4], [25, 'Orc Runner', 1, 2, 3, 4],
+                    [26, 'Orc Fatty', 0, 1, 1, 2], [27, 'Orc Fatty', 0, 1, 1, 2], [28, 'Orc Fatty', 0, 1, 1, 2], [29, 'Orc Fatty', 0, 1, 1, 2], [30, 'Orc Fatty', 0, 1, 1, 2], [31, 'Orc Fatty', 0, 1, 1, 2],
+                    [32, 'Orc Abomination', 0, 0, 1, 1], [33, 'Orc Abomination', 0, 0, 1, 1]
+                ];
+                let deck = exactGH.map(c => makeHordeCard(c[1], c[2], c[3], c[4], c[5]));
+                [34,35,36,37,38,39,40,41,42].forEach(n => deck.push(makeSpecialCard('Horde', 'ENTER THE HORDE!')));
+                deck.push(makeSpecialCard('Orc Walker', 'Extra Activation: Orc Walkers', 'yellow'));
+                deck.push(makeSpecialCard('Orc Walker', 'Extra Activation: Orc Walkers', 'yellow'));
+                deck.push(makeSpecialCard('Orc Runner', 'Extra Activation: Orc Runners', 'yellow'));
+                deck.push(makeSpecialCard('Orc Fatty', 'Extra Activation: Orc Fatties', 'orange'));
+                return deck;
+            },
+            friendsAndFoes: () => {
+                const exactFF = [
+                    [1, 'Tainted Orc Walker', 1, 2, 3, 4], [2, 'Tainted Orc Walker', 1, 2, 3, 4],
+                    [3, 'Tainted Orc Walker', 1, 2, 3, 4], [4, 'Tainted Orc Walker', 1, 2, 3, 4],
+                    [5, 'Tainted Orc Walker', 0, 2, 4, 5], [6, 'Tainted Orc Walker', 0, 2, 4, 5],
+                    [7, 'Tainted Orc Walker', 0, 2, 4, 5], [8, 'Tainted Orc Walker', 0, 2, 4, 5],
+                    [9, 'Tainted Abomination', 0, 0, 1, 1], [10, 'Tainted Abomination', 0, 0, 1, 1]
+                ];
+                let deck = exactFF.map(c => makeSpawnCard(c[1], c[2], c[3], c[4], c[5]));
+                deck.push(makeSpecialCard('Tainted Orc Walker', 'Extra Activation: Tainted Orcs', 'yellow'));
+                deck.push(makeSpecialCard('Tainted Orc Walker', 'Extra Activation: Tainted Orcs', 'yellow'));
+                return deck;
             }
+        };
+
+        const NecromancerBuilder = (standard, orc, defiled, innsmouth) => {
+            let nCards = [];
+            for(let i=0; i<standard; i++) nCards.push(makeSpecialCard('Necromancer', '1x Necromancer + Zone'));
+            for(let i=0; i<orc; i++) nCards.push(makeSpecialCard('Orc Necromancer', '1x Orc Necro + Zone (+1W/1R/1F to Horde)'));
+            for(let i=0; i<defiled; i++) nCards.push(makeSpecialCard('Defiled Necromancer', '1x Defiled Necro + Zone'));
+            for(let i=0; i<innsmouth; i++) nCards.push(makeSpecialCard('Innsmouth Necromancer', '1x Innsmouth Necro + Zone'));
+            return nCards;
         };
 
         let deck = [];
@@ -409,7 +447,7 @@
         let currentLevel = 'blue';
         let isFlipped = false;
         
-        let cabalState = { std: 6, orc: 0, innsmouth: 0 };
+        let cabalState = { std: 6, orc: 0, defiled: 0, innsmouth: 0 };
 
         const elCard = document.getElementById('card-element');
         const elDrawBtn = document.getElementById('btn-draw');
@@ -453,22 +491,20 @@
             deck = [];
             
             // Generate Selected Necromancers
-            for(let i=0; i < cabalState.std; i++) deck.push(DeckBuilder.necromancers.std());
-            for(let i=0; i < cabalState.orc; i++) deck.push(DeckBuilder.necromancers.orc());
-            for(let i=0; i < cabalState.innsmouth; i++) deck.push(DeckBuilder.necromancers.innsmouth());
+            deck = deck.concat(NecromancerBuilder(cabalState.std, cabalState.orc, cabalState.defiled, cabalState.innsmouth));
             
             // Add Base Game (if checked) and Expansions
-            if (document.getElementById('chk-blackplague').checked) deck = deck.concat(DeckBuilder.base());
-            if (document.getElementById('chk-berserker').checked) deck = deck.concat(DeckBuilder.berserker());
-            if (document.getElementById('chk-whitedeath').checked) deck = deck.concat(DeckBuilder.whiteDeath());
-            if (document.getElementById('chk-wulfsberg').checked) deck = deck.concat(DeckBuilder.wulfsberg());
-            if (document.getElementById('chk-greenhorde').checked) deck = deck.concat(DeckBuilder.greenHorde());
-            if (document.getElementById('chk-friendsfoes').checked) deck = deck.concat(DeckBuilder.friendsAndFoes());
+            if (document.getElementById('chk-blackplague').checked) deck = deck.concat(CardDatabase.base());
+            if (document.getElementById('chk-berserker').checked) deck = deck.concat(CardDatabase.berserker());
+            if (document.getElementById('chk-whitedeath').checked) deck = deck.concat(CardDatabase.whiteDeath());
+            if (document.getElementById('chk-wulfsberg').checked) deck = deck.concat(CardDatabase.wulfsberg());
+            if (document.getElementById('chk-greenhorde').checked) deck = deck.concat(CardDatabase.greenHorde());
+            if (document.getElementById('chk-friendsfoes').checked) deck = deck.concat(CardDatabase.friendsAndFoes());
 
             // Failsafe: if everything is unchecked, enforce Base Deck rules.
             if (deck.length === 6) { 
                 document.getElementById('chk-blackplague').checked = true;
-                deck = deck.concat(DeckBuilder.base());
+                deck = deck.concat(CardDatabase.base());
             }
 
             shuffle(deck);
@@ -665,9 +701,10 @@
         function updateCabalUI() {
             document.getElementById('val-std').textContent = cabalState.std;
             document.getElementById('val-orc').textContent = cabalState.orc;
+            document.getElementById('val-defiled').textContent = cabalState.defiled;
             document.getElementById('val-innsmouth').textContent = cabalState.innsmouth;
             
-            const total = cabalState.std + cabalState.orc + cabalState.innsmouth;
+            const total = cabalState.std + cabalState.orc + cabalState.defiled + cabalState.innsmouth;
             cabalCountEl.textContent = `${total} / 6 Cards`;
             
             if (total === 6) {

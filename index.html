@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zombicide Deck Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card-container {
+            perspective: 1000px;
+        }
+        .card-flip {
+            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .bg-card-texture {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            background-color: #18181b; 
+        }
+        
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen font-sans flex flex-col hide-scroll select-none">
+
+    <header class="bg-zinc-900/90 backdrop-blur border-b border-zinc-800 p-4 flex justify-between items-center shadow-lg sticky top-0 z-20">
+        <h1 class="text-xl font-black tracking-wider text-red-600 uppercase flex items-center gap-2 drop-shadow-md">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 1.74.5 3.37 1.41 4.71L5 19l3.5-1.17c1.07.75 2.27 1.17 3.5 1.17s2.43-.42 3.5-1.17L19 19l-1.41-5.29C18.5 12.37 19 10.74 19 9c0-3.87-3.13-7-7-7zm-2 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm4 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 14h6v2H9v-2z"/></svg>
+            Spawn Deck
+        </h1>
+        <button id="btn-settings" class="p-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 active:scale-95 transition shadow-inner">
+            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
+    </header>
+
+    <main class="flex-1 flex flex-col p-4 max-w-md w-full mx-auto relative justify-between">
+        <div class="mb-4 mt-2">
+            <div class="flex rounded-xl overflow-hidden shadow-lg border border-zinc-800 bg-zinc-900">
+                <button class="flex-1 py-3 border-r border-zinc-800 hover:bg-zinc-800 active:bg-zinc-700 transition danger-btn active" data-level="blue">
+                    <div class="w-5 h-5 mx-auto rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.9)] indicator transition-all"></div>
+                </button>
+                <button class="flex-1 py-3 border-r border-zinc-800 hover:bg-zinc-800 active:bg-zinc-700 transition danger-btn" data-level="yellow">
+                    <div class="w-5 h-5 mx-auto rounded-full bg-yellow-500 opacity-20 indicator transition-all"></div>
+                </button>
+                <button class="flex-1 py-3 border-r border-zinc-800 hover:bg-zinc-800 active:bg-zinc-700 transition danger-btn" data-level="orange">
+                    <div class="w-5 h-5 mx-auto rounded-full bg-orange-500 opacity-20 indicator transition-all"></div>
+                </button>
+                <button class="flex-1 py-3 hover:bg-zinc-800 active:bg-zinc-700 transition danger-btn" data-level="red">
+                    <div class="w-5 h-5 mx-auto rounded-full bg-red-600 opacity-20 indicator transition-all"></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col justify-center items-center card-container mb-6 w-full">
+            <div class="w-full flex justify-between text-xs font-bold text-zinc-500 mb-2 px-1 uppercase tracking-widest">
+                <span id="deck-count">Deck: 0/0</span>
+                <span id="discard-count">Discard: 0</span>
+            </div>
+            
+            <div id="card-element" class="w-full aspect-[2.5/3.5] max-h-[60vh] relative card-flip cursor-pointer drop-shadow-2xl">
+                
+                <!-- Card Front -->
+                <div class="absolute inset-0 card-face rounded-2xl bg-card-texture border border-zinc-700 flex flex-col overflow-hidden shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] ring-1 ring-black">
+                    <div class="bg-zinc-900/90 p-3 border-b border-zinc-700 text-center font-black text-xl tracking-widest drop-shadow-md transition-colors duration-300 flex items-center justify-center gap-2" id="card-title">
+                        SPAWN
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col p-2.5 gap-2.5 bg-zinc-900/40" id="card-levels">
+                        <!-- Blue -->
+                        <div class="flex-1 rounded-xl border border-blue-900/40 bg-gradient-to-r from-blue-900/20 to-transparent flex items-center px-4 transition-all duration-300 level-row" data-row="blue">
+                            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-[0_0_10px_rgba(37,99,235,0.4)] shrink-0 border border-blue-400/30">1</div>
+                            <div class="ml-4 font-bold text-sm sm:text-base md:text-lg text-blue-50 val-text drop-shadow flex-1 leading-tight">Nothing</div>
+                        </div>
+                        <!-- Yellow -->
+                        <div class="flex-1 rounded-xl border border-yellow-900/40 bg-gradient-to-r from-yellow-900/20 to-transparent flex items-center px-4 transition-all duration-300 opacity-40 scale-[0.98] grayscale-[30%] level-row" data-row="yellow">
+                            <div class="w-8 h-8 rounded-lg bg-yellow-500 flex items-center justify-center font-bold text-zinc-900 shadow-[0_0_10px_rgba(234,179,8,0.4)] shrink-0 border border-yellow-200/50">2</div>
+                            <div class="ml-4 font-bold text-sm sm:text-base md:text-lg text-yellow-50 val-text drop-shadow flex-1 leading-tight">Nothing</div>
+                        </div>
+                        <!-- Orange -->
+                        <div class="flex-1 rounded-xl border border-orange-900/40 bg-gradient-to-r from-orange-900/20 to-transparent flex items-center px-4 transition-all duration-300 opacity-40 scale-[0.98] grayscale-[30%] level-row" data-row="orange">
+                            <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center font-bold text-white shadow-[0_0_10px_rgba(249,115,22,0.4)] shrink-0 border border-orange-300/30">3</div>
+                            <div class="ml-4 font-bold text-sm sm:text-base md:text-lg text-orange-50 val-text drop-shadow flex-1 leading-tight">Nothing</div>
+                        </div>
+                        <!-- Red -->
+                        <div class="flex-1 rounded-xl border border-red-900/40 bg-gradient-to-r from-red-900/20 to-transparent flex items-center px-4 transition-all duration-300 opacity-40 scale-[0.98] grayscale-[30%] level-row" data-row="red">
+                            <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center font-bold text-white shadow-[0_0_10px_rgba(220,38,38,0.4)] shrink-0 border border-red-400/30">4</div>
+                            <div class="ml-4 font-bold text-sm sm:text-base md:text-lg text-red-50 val-text drop-shadow flex-1 leading-tight">Nothing</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Back -->
+                <div class="absolute inset-0 card-face card-back rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center bg-card-texture shadow-2xl ring-1 ring-black">
+                    <div class="w-32 h-32 rounded-full border-4 border-red-900/50 flex items-center justify-center bg-zinc-950/80 shadow-[inset_0_0_20px_rgba(153,27,27,0.5)]">
+                        <svg class="w-16 h-16 text-red-800 drop-shadow-[0_0_15px_rgba(185,28,28,0.8)]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 1.74.5 3.37 1.41 4.71L5 19l3.5-1.17c1.07.75 2.27 1.17 3.5 1.17s2.43-.42 3.5-1.17L19 19l-1.41-5.29C18.5 12.37 19 10.74 19 9c0-3.87-3.13-7-7-7zm-2 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm4 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 14h6v2H9v-2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full flex flex-col gap-2">
+            <!-- Draw Button -->
+            <button id="btn-draw" class="w-full py-5 rounded-2xl bg-red-700 text-white font-black text-2xl uppercase tracking-widest shadow-[0_0_25px_rgba(185,28,28,0.4)] active:scale-95 active:shadow-[0_0_10px_rgba(185,28,28,0.6)] transition-all relative overflow-hidden group">
+                <span class="relative z-10 flex justify-center items-center gap-2">
+                    Draw Spawn
+                    <svg class="w-6 h-6 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+
+            <!-- Phase Tracking Controls -->
+            <div class="flex gap-2 w-full">
+                <button id="btn-view-log" class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-zinc-300 font-bold text-sm transition shadow-inner flex items-center justify-center gap-2 active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    Phase Log
+                    <span id="log-count" class="bg-zinc-700 text-white px-2 py-0.5 rounded-md text-xs border border-zinc-600 shadow-sm">0</span>
+                </button>
+                <button id="btn-next-phase" class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-zinc-300 font-bold text-sm transition shadow-inner flex items-center justify-center gap-2 active:scale-95">
+                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    End Phase
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-log" class="fixed inset-0 bg-black/80 z-40 hidden flex-col justify-end sm:justify-center items-center backdrop-blur-sm transition-opacity">
+        <div class="bg-zinc-900 w-full max-w-md sm:rounded-3xl border-t sm:border border-zinc-700 p-6 shadow-2xl transform transition-transform translate-y-full duration-300 flex flex-col max-h-[85vh]" id="modal-log-content">
+            <div class="flex justify-between items-center mb-4 shrink-0 border-b border-zinc-800 pb-4">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Current Phase Log
+                </h2>
+                <button id="btn-close-log" class="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div id="log-list-container" class="flex-1 overflow-y-auto pr-2 hide-scroll space-y-3 mb-2">
+                <!-- Log items injected via JS -->
+            </div>
+            
+            <p class="text-xs text-zinc-500 text-center mt-2 italic">Displays cards drawn since the phase began.</p>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="fixed inset-0 bg-black/80 z-50 hidden flex-col justify-end sm:justify-center items-center backdrop-blur-sm transition-opacity">
+        <div class="bg-zinc-900 w-full max-w-md sm:rounded-3xl border-t sm:border border-zinc-700 p-6 shadow-2xl transform transition-transform translate-y-full duration-300 flex flex-col max-h-[90vh]" id="modal-content">
+            
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Deck Configuration
+                </h2>
+                <button id="btn-close-settings" class="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto pr-1 hide-scroll space-y-6 mb-6">
+                
+                <!-- CABAL BUILDER -->
+                <div>
+                    <h3 class="text-purple-400 font-bold uppercase tracking-widest text-sm mb-3 flex justify-between items-center">
+                        <span>Necromancer Cabal</span>
+                        <span id="cabal-count" class="px-2 py-0.5 rounded bg-purple-900/50 text-purple-200">6 / 6 Cards</span>
+                    </h3>
+                    <div class="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-white text-sm">Standard (Black Plague)</div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-zinc-900 rounded-lg p-1 border border-zinc-700">
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="std" data-action="minus">-</button>
+                                <span class="w-4 text-center font-bold text-white text-sm cabal-val" id="val-std">6</span>
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="std" data-action="plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-white text-sm">Orc (Green Horde)</div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-zinc-900 rounded-lg p-1 border border-zinc-700">
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="orc" data-action="minus">-</button>
+                                <span class="w-4 text-center font-bold text-white text-sm cabal-val" id="val-orc">0</span>
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="orc" data-action="plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-white text-sm">Innsmouth</div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-zinc-900 rounded-lg p-1 border border-zinc-700">
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="innsmouth" data-action="minus">-</button>
+                                <span class="w-4 text-center font-bold text-white text-sm cabal-val" id="val-innsmouth">0</span>
+                                <button class="w-7 h-7 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold cabal-btn flex items-center justify-center" data-target="innsmouth" data-action="plus">+</button>
+                            </div>
+                        </div>
+                        
+                        <p id="cabal-error" class="text-red-400 text-xs font-bold hidden mt-2">Must select exactly 6 Necromancers total.</p>
+                    </div>
+                </div>
+
+                <!-- EXPANSIONS -->
+                <div>
+                    <h3 class="text-zinc-500 font-bold uppercase tracking-widest text-sm mb-3">Zombie Expansions</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center p-4 rounded-xl border border-zinc-700 bg-zinc-800/80 cursor-pointer hover:bg-zinc-700 transition">
+                            <input type="checkbox" id="chk-blackplague" checked class="w-6 h-6 rounded border-zinc-600 text-red-600 bg-zinc-900 focus:ring-0">
+                            <div class="ml-4">
+                                <span class="block text-white font-bold">Black Plague (Base)</span>
+                                <span class="block text-sm text-zinc-400 leading-tight mt-1">Walkers, Runners, Fatties, Abom, Double Spawns.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 rounded-xl border border-zinc-700 bg-zinc-800/80 cursor-pointer hover:bg-zinc-700 transition">
+                            <input type="checkbox" id="chk-berserker" class="w-6 h-6 rounded border-zinc-600 text-red-600 bg-zinc-900 focus:ring-0">
+                            <div class="ml-4">
+                                <span class="block text-white font-bold">Berserker Walkers</span>
+                                <span class="block text-sm text-zinc-400 leading-tight mt-1">Immune to ranged weapons in combat.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 rounded-xl border border-zinc-700 bg-zinc-800/80 cursor-pointer hover:bg-zinc-700 transition">
+                            <input type="checkbox" id="chk-whitedeath" class="w-6 h-6 rounded border-zinc-600 text-red-600 bg-zinc-900 focus:ring-0">
+                            <div class="ml-4">
+                                <span class="block text-white font-bold">White Death</span>
+                                <span class="block text-sm text-zinc-400 leading-tight mt-1">Terrorcotta Walkers, Climbers, and Brutes.</span>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 rounded-xl border border-zinc-700 bg-zinc-800/80 cursor-pointer hover:bg-zinc-700 transition">
+                            <input type="checkbox" id="chk-wulfsberg" class="w-6 h-6 rounded border-zinc-600 text-red-600 bg-zinc-900 focus:ring-0">
+                            <div class="ml-4">
+                                <span class="block text-white font-bold">Wulfsberg</span>
+                                <span class="block text-sm text-zinc-400 leading-tight mt-1">Zombie Wolfz and the Wolfbomination.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 rounded-xl border border-zinc-700 bg-zinc-800/80 cursor-pointer hover:bg-zinc-700 transition">
+                            <input type="checkbox" id="chk-greenhorde" class="w-6 h-6 rounded border-zinc-600 text-red-600 bg-zinc-900 focus:ring-0">
+                            <div class="ml-4">
+                                <span class="block text-white font-bold">Green Horde Zombies</span>
+                                <span class="block text-sm text-zinc-400 leading-tight mt-1">Orcs, Orc Abom, and Enter the Horde cards.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 rounded-xl border border-zinc-700 bg-zinc-800/80 cursor-pointer hover:bg-zinc-700 transition">
+                            <input type="checkbox" id="chk-friendsfoes" class="w-6 h-6 rounded border-zinc-600 text-red-600 bg-zinc-900 focus:ring-0">
+                            <div class="ml-4">
+                                <span class="block text-white font-bold">Friends and Foes</span>
+                                <span class="block text-sm text-zinc-400 leading-tight mt-1">Tainted Orcs and Tainted Abomination.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <button id="btn-rebuild" class="shrink-0 w-full py-4 rounded-xl bg-white text-zinc-900 font-bold text-lg hover:bg-zinc-200 active:scale-[0.98] transition shadow-lg flex justify-center items-center gap-2 disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Apply & Shuffle Deck
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function formatSpawn(count, name) {
+            if (count === 0) return "Nothing";
+            let plural = name;
+            if (count > 1) {
+                if (name.includes("Fatty")) plural = name.replace("Fatty", "Fatties");
+                else if (name.includes("Necromancer")) plural = name + "s";
+                else if (name === "Zombie Wolfz") plural = "Zombie Wolfz"; 
+                else plural = name + "s";
+            }
+            return `${count}x ${plural}`;
+        }
+
+        function makeSpawnCard(target, b, y, o, r) {
+            return {
+                type: 'spawn',
+                target: target,
+                blue: formatSpawn(b, target),
+                yellow: formatSpawn(y, target),
+                orange: formatSpawn(o, target),
+                red: formatSpawn(r, target)
+            };
+        }
+
+        function makeSpecialCard(target, name, minLevel = 'blue') {
+            const levels = ['blue', 'yellow', 'orange', 'red'];
+            const minIdx = levels.indexOf(minLevel);
+            const card = { type: 'special', target: target };
+            levels.forEach((l, i) => {
+                card[l] = i >= minIdx ? name : "Nothing";
+            });
+            return card;
+        }
+
+        function makeHordeCard(target, b, y, o, r) {
+            return {
+                type: 'spawn',
+                target: target,
+                blue: b === 0 ? "Nothing" : `${formatSpawn(b, target)} (+1 Horde)`,
+                yellow: y === 0 ? "Nothing" : `${formatSpawn(y, target)} (+1 Horde)`,
+                orange: o === 0 ? "Nothing" : `${formatSpawn(o, target)} (+1 Horde)`,
+                red: r === 0 ? "Nothing" : `${formatSpawn(r, target)} (+1 Horde)`
+            };
+        }
+
+        const DeckBuilder = {
+            base: () => [
+                ...Array(6).fill(null).map(() => makeSpawnCard('Walker', 1, 2, 3, 5)),
+                ...Array(5).fill(null).map(() => makeSpawnCard('Walker', 2, 3, 4, 6)),
+                ...Array(6).fill(null).map(() => makeSpawnCard('Walker', 0, 1, 2, 4)),
+                ...Array(5).fill(null).map(() => makeSpawnCard('Runner', 0, 1, 2, 3)),
+                ...Array(4).fill(null).map(() => makeSpawnCard('Runner', 1, 2, 3, 4)),
+                ...Array(3).fill(null).map(() => makeSpawnCard('Runner', 0, 0, 1, 2)),
+                ...Array(4).fill(null).map(() => makeSpawnCard('Fatty', 0, 1, 1, 2)),
+                ...Array(4).fill(null).map(() => makeSpawnCard('Fatty', 0, 0, 2, 3)),
+                ...Array(3).fill(null).map(() => makeSpawnCard('Abomination', 0, 0, 1, 1)),
+                ...Array(4).fill(null).map(() => makeSpecialCard('Double Spawn', 'DOUBLE SPAWN')),
+                ...Array(2).fill(null).map(() => makeSpecialCard('Walker', 'Extra Activation: Walkers', 'yellow')),
+                ...Array(1).fill(null).map(() => makeSpecialCard('Runner', 'Extra Activation: Runners', 'yellow')),
+                ...Array(1).fill(null).map(() => makeSpecialCard('Fatty', 'Extra Activation: Fatties', 'orange'))
+            ],
+            berserker: () => [
+                ...Array(4).fill(null).map(() => makeSpawnCard('Berserker Walker', 1, 2, 3, 4)),
+                ...Array(4).fill(null).map(() => makeSpawnCard('Berserker Walker', 0, 2, 4, 5)),
+                ...Array(2).fill(null).map(() => makeSpecialCard('Berserker Walker', 'Extra Activation: Berserker Walkers', 'yellow'))
+            ],
+            whiteDeath: () => [
+                ...Array(4).fill(null).map(() => makeSpawnCard('Terrorcotta Walker', 1, 2, 3, 4)),
+                ...Array(4).fill(null).map(() => makeSpawnCard('Terrorcotta Walker', 2, 3, 4, 5)),
+                ...Array(3).fill(null).map(() => makeSpawnCard('Climber', 0, 1, 2, 3)),
+                ...Array(2).fill(null).map(() => makeSpawnCard('Climber', 1, 2, 3, 4)),
+                ...Array(3).fill(null).map(() => makeSpawnCard('Brute', 0, 1, 2, 3)),
+                ...Array(2).fill(null).map(() => makeSpecialCard('Terrorcotta Walker', 'Extra Activation: Terrorcotta Walkers', 'yellow')),
+                ...Array(1).fill(null).map(() => makeSpecialCard('Climber', 'Extra Activation: Climbers', 'orange'))
+            ],
+            wulfsberg: () => [
+                ...Array(4).fill(null).map(() => makeSpawnCard('Zombie Wolfz', 1, 2, 3, 4)),
+                ...Array(4).fill(null).map(() => makeSpawnCard('Zombie Wolfz', 0, 2, 3, 4)),
+                ...Array(2).fill(null).map(() => makeSpawnCard('Wolfbomination', 0, 0, 1, 1)),
+                ...Array(2).fill(null).map(() => makeSpecialCard('Zombie Wolfz', 'Extra Activation: Zombie Wolfz', 'yellow'))
+            ],
+            greenHorde: () => [
+                ...Array(6).fill(null).map(() => makeHordeCard('Orc Walker', 1, 2, 3, 5)),
+                ...Array(5).fill(null).map(() => makeHordeCard('Orc Walker', 2, 3, 4, 6)),
+                ...Array(5).fill(null).map(() => makeHordeCard('Orc Walker', 0, 1, 2, 4)),
+                ...Array(5).fill(null).map(() => makeHordeCard('Orc Runner', 0, 1, 2, 3)),
+                ...Array(4).fill(null).map(() => makeHordeCard('Orc Runner', 1, 2, 3, 4)),
+                ...Array(2).fill(null).map(() => makeHordeCard('Orc Runner', 0, 0, 1, 2)),
+                ...Array(4).fill(null).map(() => makeHordeCard('Orc Fatty', 0, 1, 1, 2)),
+                ...Array(4).fill(null).map(() => makeHordeCard('Orc Fatty', 0, 0, 2, 3)),
+                ...Array(3).fill(null).map(() => makeSpawnCard('Orc Abomination', 0, 0, 1, 1)),
+                ...Array(4).fill(null).map(() => makeSpecialCard('Enter the Horde!', 'ENTER THE HORDE!')),
+                ...Array(4).fill(null).map(() => makeSpecialCard('Double Spawn', 'DOUBLE SPAWN')),
+                ...Array(2).fill(null).map(() => makeSpecialCard('Orc Walker', 'Extra Activation: Orc Walkers', 'yellow')),
+                ...Array(1).fill(null).map(() => makeSpecialCard('Orc Runner', 'Extra Activation: Orc Runners', 'yellow')),
+                ...Array(1).fill(null).map(() => makeSpecialCard('Orc Fatty', 'Extra Activation: Orc Fatties', 'orange'))
+            ],
+            friendsAndFoes: () => [
+                ...Array(4).fill(null).map(() => makeHordeCard('Tainted Orc Walker', 1, 2, 3, 4)),
+                ...Array(4).fill(null).map(() => makeHordeCard('Tainted Orc Walker', 0, 2, 4, 5)),
+                ...Array(2).fill(null).map(() => makeSpawnCard('Tainted Abomination', 0, 0, 1, 1)),
+                ...Array(2).fill(null).map(() => makeSpecialCard('Tainted Orc Walker', 'Extra Activation: Tainted Orcs', 'yellow'))
+            ],
+            necromancers: {
+                std: () => makeSpecialCard('Standard Necromancer', '1x Necromancer + Zone'),
+                orc: () => makeSpecialCard('Orc Necromancer', '1x Orc Necromancer + Zone (+1 Walker, +1 Runner, +1 Fatty to Horde)'),
+                innsmouth: () => makeSpecialCard('Innsmouth Necromancer', '1x Innsmouth Necromancer + Zone')
+            }
+        };
+
+        let deck = [];
+        let discardPile = [];
+        let phaseLog = [];
+        let currentLevel = 'blue';
+        let isFlipped = false;
+        
+        let cabalState = { std: 6, orc: 0, innsmouth: 0 };
+
+        const elCard = document.getElementById('card-element');
+        const elDrawBtn = document.getElementById('btn-draw');
+        const elDeckCount = document.getElementById('deck-count');
+        const elDiscardCount = document.getElementById('discard-count');
+        const dangerBtns = document.querySelectorAll('.danger-btn');
+        const levelRows = document.querySelectorAll('.level-row');
+        
+        const modalSettings = document.getElementById('modal-settings');
+        const modalSettingsContent = document.getElementById('modal-content');
+        const btnRebuild = document.getElementById('btn-rebuild');
+        const cabalError = document.getElementById('cabal-error');
+        const cabalCountEl = document.getElementById('cabal-count');
+
+        const modalLog = document.getElementById('modal-log');
+        const modalLogContent = document.getElementById('modal-log-content');
+        const logListContainer = document.getElementById('log-list-container');
+        const btnViewLog = document.getElementById('btn-view-log');
+        const btnNextPhase = document.getElementById('btn-next-phase');
+        const logCountEl = document.getElementById('log-count');
+
+        function init() {
+            elCard.classList.add('flipped');
+            isFlipped = true;
+
+            buildDeck();
+            setupEventListeners();
+            updateDangerUI();
+            updateCabalUI();
+            updateLogUI();
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function buildDeck() {
+            deck = [];
+            
+            // Generate Selected Necromancers
+            for(let i=0; i < cabalState.std; i++) deck.push(DeckBuilder.necromancers.std());
+            for(let i=0; i < cabalState.orc; i++) deck.push(DeckBuilder.necromancers.orc());
+            for(let i=0; i < cabalState.innsmouth; i++) deck.push(DeckBuilder.necromancers.innsmouth());
+            
+            // Add Base Game (if checked) and Expansions
+            if (document.getElementById('chk-blackplague').checked) deck = deck.concat(DeckBuilder.base());
+            if (document.getElementById('chk-berserker').checked) deck = deck.concat(DeckBuilder.berserker());
+            if (document.getElementById('chk-whitedeath').checked) deck = deck.concat(DeckBuilder.whiteDeath());
+            if (document.getElementById('chk-wulfsberg').checked) deck = deck.concat(DeckBuilder.wulfsberg());
+            if (document.getElementById('chk-greenhorde').checked) deck = deck.concat(DeckBuilder.greenHorde());
+            if (document.getElementById('chk-friendsfoes').checked) deck = deck.concat(DeckBuilder.friendsAndFoes());
+
+            // Failsafe: if everything is unchecked, enforce Base Deck rules.
+            if (deck.length === 6) { 
+                document.getElementById('chk-blackplague').checked = true;
+                deck = deck.concat(DeckBuilder.base());
+            }
+
+            shuffle(deck);
+            discardPile = [];
+            startNextPhase(); // Reset phase log when deck is rebuilt
+            updateCounts();
+            
+            if (!isFlipped) {
+                elCard.classList.add('flipped');
+                isFlipped = true;
+            }
+            
+            closeSettings();
+        }
+
+        function updateCounts() {
+            elDeckCount.textContent = `Deck: ${deck.length}`;
+            elDiscardCount.textContent = `Discard: ${discardPile.length}`;
+        }
+
+        function getCardRenderInfo(card, level) {
+            let title = 'SPAWN';
+            let titleClass = 'text-white';
+            let borderColor = 'border-zinc-700';
+            let icon = '';
+
+            if (card.target === 'Enter the Horde!') {
+                title = 'ENTER THE HORDE!';
+                titleClass = 'text-green-500';
+                borderColor = 'border-green-900/50';
+            } else if (card.target === 'Double Spawn') {
+                title = 'DOUBLE SPAWN';
+                titleClass = 'text-red-500';
+                borderColor = 'border-red-900/50';
+            } else if (card.type === 'special' && card.target.includes('Necromancer')) {
+                title = 'NECROMANCER';
+                titleClass = 'text-purple-400';
+                borderColor = 'border-purple-900/50';
+                icon = `<svg class="w-5 h-5 mr-1 inline-block text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 1.74.5 3.37 1.41 4.71L5 19l3.5-1.17c1.07.75 2.27 1.17 3.5 1.17s2.43-.42 3.5-1.17L19 19l-1.41-5.29C18.5 12.37 19 10.74 19 9c0-3.87-3.13-7-7-7zm-2 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm4 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 14h6v2H9v-2z"/></svg>`;
+            } else if (card.type === 'special') {
+                title = 'ACTIVATION';
+                titleClass = 'text-orange-400';
+                borderColor = 'border-orange-900/50';
+            }
+
+            let text = card[level];
+            let isNothing = (text === "Nothing");
+            
+            // Format Horde HTML Tags securely
+            let htmlText = text;
+            if (text.includes('(+1 Horde)')) {
+                htmlText = text.replace(' (+1 Horde)', ' <span class="text-green-400 font-black text-xs sm:text-sm ml-1 drop-shadow-md whitespace-nowrap">(+1 Horde)</span>');
+            } else if (text.includes('(+1 Walker, +1 Runner, +1 Fatty to Horde)')) {
+                htmlText = text.replace(' (+1 Walker, +1 Runner, +1 Fatty to Horde)', ' <br/><span class="text-green-400 font-black text-[11px] sm:text-xs leading-tight drop-shadow-md block mt-1">(+1 Walker, +1 Runner, +1 Fatty to Horde)</span>');
+            }
+
+            return { title, titleClass, borderColor, icon, htmlText, isNothing, level, text };
+        }
+
+        function drawCard() {
+            if (deck.length === 0) {
+                if (discardPile.length === 0) return; 
+                deck = [...discardPile];
+                discardPile = [];
+                shuffle(deck);
+                updateCounts();
+                
+                elCard.classList.add('flipped');
+                isFlipped = true;
+                
+                setTimeout(drawCard, 400);
+                return;
+            }
+
+            const card = deck.pop();
+            discardPile.push(card);
+            
+            // Add card to Phase Log using current active danger level
+            const logEntry = getCardRenderInfo(card, currentLevel);
+            phaseLog.push(logEntry);
+            updateLogUI();
+            
+            if (!isFlipped) {
+                elCard.classList.add('flipped');
+                isFlipped = true;
+                
+                setTimeout(() => {
+                    renderMainCard(card);
+                    elCard.classList.remove('flipped');
+                    isFlipped = false;
+                    updateCounts();
+                }, 250); 
+            } else {
+                renderMainCard(card);
+                elCard.classList.remove('flipped');
+                isFlipped = false;
+                updateCounts();
+            }
+        }
+
+        function renderMainCard(card) {
+            const titleEl = document.getElementById('card-title');
+            
+            // Get rendering data (use 'blue' as a baseline just to get headers)
+            const cardInfo = getCardRenderInfo(card, 'blue');
+            
+            titleEl.innerHTML = `${cardInfo.icon}${cardInfo.title}`;
+            titleEl.className = `bg-zinc-900/90 p-3 border-b ${cardInfo.borderColor} text-center font-black text-xl tracking-widest ${cardInfo.titleClass} shadow-md flex items-center justify-center gap-2 transition-colors duration-300`;
+
+            const levels = ['blue', 'yellow', 'orange', 'red'];
+            levels.forEach(lvl => {
+                const row = document.querySelector(`.level-row[data-row="${lvl}"]`);
+                const textEl = row.querySelector('.val-text');
+                const lvlInfo = getCardRenderInfo(card, lvl);
+                
+                textEl.innerHTML = lvlInfo.htmlText;
+                
+                if (lvlInfo.isNothing) {
+                    textEl.classList.add('opacity-40');
+                } else {
+                    textEl.classList.remove('opacity-40');
+                }
+            });
+        }
+
+        function updateLogUI() {
+            logCountEl.textContent = phaseLog.length;
+            
+            if (phaseLog.length === 0) {
+                logListContainer.innerHTML = `<p class="text-zinc-500 text-center italic py-4">No cards drawn this phase.</p>`;
+                return;
+            }
+
+            const getLevelColor = (level) => {
+                if(level === 'blue') return 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] border-blue-500/50';
+                if(level === 'yellow') return 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.8)] border-yellow-500/50';
+                if(level === 'orange') return 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)] border-orange-500/50';
+                if(level === 'red') return 'bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.8)] border-red-500/50';
+                return 'bg-zinc-500';
+            };
+
+            logListContainer.innerHTML = phaseLog.map((log, index) => `
+                <div class="bg-zinc-800/80 rounded-xl p-3 border border-zinc-700 border-l-4 ${getLevelColor(log.level).split(' ')[2]} shadow-sm flex flex-col gap-1.5 animate-[fadeIn_0.2s_ease-out]">
+                    <div class="flex justify-between items-center opacity-80">
+                        <span class="text-[10px] font-black uppercase tracking-widest ${log.titleClass}">${log.title} #${index + 1}</span>
+                        <div class="w-2.5 h-2.5 rounded-full ${getLevelColor(log.level)}"></div>
+                    </div>
+                    <div class="text-sm font-bold text-gray-100 leading-tight">${log.htmlText}</div>
+                </div>
+            `).join('');
+            
+            // Auto scroll to bottom
+            logListContainer.scrollTop = logListContainer.scrollHeight;
+        }
+
+        function startNextPhase() {
+            phaseLog = [];
+            updateLogUI();
+        }
+
+        function updateDangerUI() {
+            dangerBtns.forEach(btn => {
+                const lvl = btn.dataset.level;
+                const indicator = btn.querySelector('.indicator');
+                
+                if (lvl === currentLevel) {
+                    btn.classList.add('active', 'bg-zinc-800');
+                    indicator.classList.remove('opacity-20');
+                    indicator.classList.add('scale-125');
+                    
+                    if(lvl === 'blue') indicator.style.boxShadow = '0 0 14px rgba(59,130,246,1)';
+                    if(lvl === 'yellow') indicator.style.boxShadow = '0 0 14px rgba(234,179,8,1)';
+                    if(lvl === 'orange') indicator.style.boxShadow = '0 0 14px rgba(249,115,22,1)';
+                    if(lvl === 'red') indicator.style.boxShadow = '0 0 14px rgba(220,38,38,1)';
+                } else {
+                    btn.classList.remove('active', 'bg-zinc-800');
+                    indicator.classList.add('opacity-20');
+                    indicator.classList.remove('scale-125');
+                    indicator.style.boxShadow = 'none';
+                }
+            });
+
+            levelRows.forEach(row => {
+                if (row.dataset.row === currentLevel) {
+                    row.classList.remove('opacity-40', 'scale-[0.98]', 'grayscale-[30%]');
+                    row.classList.add('scale-100', 'bg-opacity-100', 'shadow-[0_4px_20px_rgba(0,0,0,0.5)]', 'z-10');
+                } else {
+                    row.classList.add('opacity-40', 'scale-[0.98]', 'grayscale-[30%]');
+                    row.classList.remove('scale-100', 'bg-opacity-100', 'shadow-[0_4px_20px_rgba(0,0,0,0.5)]', 'z-10');
+                }
+            });
+        }
+
+        function updateCabalUI() {
+            document.getElementById('val-std').textContent = cabalState.std;
+            document.getElementById('val-orc').textContent = cabalState.orc;
+            document.getElementById('val-innsmouth').textContent = cabalState.innsmouth;
+            
+            const total = cabalState.std + cabalState.orc + cabalState.innsmouth;
+            cabalCountEl.textContent = `${total} / 6 Cards`;
+            
+            if (total === 6) {
+                btnRebuild.disabled = false;
+                cabalError.classList.add('hidden');
+                cabalCountEl.className = "px-2 py-0.5 rounded bg-purple-900/50 text-purple-200";
+            } else {
+                btnRebuild.disabled = true;
+                cabalError.classList.remove('hidden');
+                cabalCountEl.className = "px-2 py-0.5 rounded bg-red-900/50 text-red-200 font-bold";
+            }
+        }
+
+        function handleCabalChange(e) {
+            const btn = e.target.closest('.cabal-btn');
+            if (!btn) return;
+            const target = btn.dataset.target;
+            const action = btn.dataset.action;
+            
+            if (action === 'plus' && cabalState[target] < 6) {
+                cabalState[target]++;
+            } else if (action === 'minus' && cabalState[target] > 0) {
+                cabalState[target]--;
+            }
+            updateCabalUI();
+        }
+
+        // Modal Helpers
+        function openSettings() {
+            modalSettings.classList.remove('hidden');
+            modalSettings.classList.add('flex');
+            setTimeout(() => { modalSettingsContent.classList.remove('translate-y-full'); }, 10);
+        }
+
+        function closeSettings() {
+            modalSettingsContent.classList.add('translate-y-full');
+            setTimeout(() => {
+                modalSettings.classList.add('hidden');
+                modalSettings.classList.remove('flex');
+            }, 300);
+        }
+
+        function openLog() {
+            modalLog.classList.remove('hidden');
+            modalLog.classList.add('flex');
+            setTimeout(() => { modalLogContent.classList.remove('translate-y-full'); }, 10);
+        }
+
+        function closeLog() {
+            modalLogContent.classList.add('translate-y-full');
+            setTimeout(() => {
+                modalLog.classList.add('hidden');
+                modalLog.classList.remove('flex');
+            }, 300);
+        }
+
+        function setupEventListeners() {
+            elDrawBtn.addEventListener('click', drawCard);
+            elCard.addEventListener('click', drawCard);
+
+            dangerBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentLevel = btn.dataset.level;
+                    updateDangerUI();
+                });
+            });
+
+            document.getElementById('btn-settings').addEventListener('click', openSettings);
+            document.getElementById('btn-close-settings').addEventListener('click', closeSettings);
+            btnRebuild.addEventListener('click', buildDeck);
+            
+            document.querySelectorAll('.cabal-btn').forEach(btn => {
+                btn.addEventListener('click', handleCabalChange);
+            });
+            
+            btnViewLog.addEventListener('click', openLog);
+            document.getElementById('btn-close-log').addEventListener('click', closeLog);
+            btnNextPhase.addEventListener('click', startNextPhase);
+
+            // Close Modals on external overlay click
+            modalSettings.addEventListener('click', (e) => {
+                if(e.target === modalSettings) closeSettings();
+            });
+            modalLog.addEventListener('click', (e) => {
+                if(e.target === modalLog) closeLog();
+            });
+        }
+
+        // Start Application
+        init();
+
+    </script>
+</body>
+</html>
